@@ -206,16 +206,49 @@ class HtmlBuilder
     }
 end
 
+
+# Start main
+require 'optparse'
+require 'ostruct'
+
+options = OpenStruct.new
+options.css = []
+options.js = []
+
+optparser = OptionParser.new do |opts|
+    opts.on("-j", "--js [PATH]", "Add a <script> tag with given PATH as source") do |path|
+        options.js << path
+    end
+    
+    opts.on("-s", "--css [PATH]", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
+        options.css << path 
+    end
+end
+
+optparser.parse!
+
 page = ManPage.new
 page.parse_file $stdin
-puts "<html>
+
+# Here comes the ugly code I'm responsible for...
+# TODO Definitely clean that up!
+puts "<!DOCTYPE html>
+<html>
     <head>
         <style>
             html {
                 white-space: pre;
                 font-family: monospace
             }
-        </style>
-    </head>
+        </style>"
+for js in options.js
+    puts "        <script src='#{js}'></script>"
+end
+
+for css in options.css
+    puts "        <link rel='stylesheet' href='#{css}'/>"
+end
+
+puts "    </head>
     <body>#{page.html}</body>
 </html>"
