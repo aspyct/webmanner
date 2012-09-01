@@ -207,7 +207,7 @@ class HtmlBuilder
 end
 
 class ManHtmlBodyWrapper
-    attr_accessor :body, :default_style
+    attr_accessor :body, :default_style, :tab_spaces
     
     def initialize
         @title = "Man page"
@@ -215,6 +215,7 @@ class ManHtmlBodyWrapper
         @css = []
         @js = []
         @output = nil
+        @tab_spaces = 4
         @default_style = "html { white-space: pre; font-family: monospace; }"
     end
     
@@ -278,11 +279,11 @@ class ManHtmlBodyWrapper
     end
     
     def indent
-        @indent << " " * 4
+        @indent << " " * @tab_spaces
     end
     
     def dedent
-        @indent = @indent.slice!(0, 4)
+        @indent = @indent.slice!(0, @tab_spaces)
     end
 end
 
@@ -300,6 +301,10 @@ optparser = OptionParser.new do |opts|
     
     opts.on("-s", "--css [PATH]", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
         wrapper.add_css path 
+    end
+    
+    opts.on("-t", "--tab-spaces [NUM]", "Set the number of whitespaces for html indentation") do |num|
+        wrapper.tab_spaces = num.to_i
     end
 end
 
