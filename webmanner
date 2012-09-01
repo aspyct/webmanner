@@ -28,7 +28,7 @@ class ManPage
     attr_accessor :title
 
     def initialize
-        @builder = HtmlBuilder.new
+        @builder = ManHtmlBuilder.new
         @open_style = :none # :bold, :italic
         @open_block = :none # :title, :paragraph
         @buffer = ""
@@ -114,6 +114,36 @@ class ManPage
     def commit_buffer
         @builder << @buffer
         @buffer = ""
+    end
+end
+
+class ManHtmlBuilder
+    def initialize
+        @builder = HtmlBuilder.new
+    end
+    
+    def html
+        @builder.html
+    end
+    
+    def open? type
+        @builder.open? type
+    end
+    
+    def << text
+        @builder << text
+    end
+    
+    def open type
+        if not (type == :bold and self.open? :title)
+            @builder.open type
+        end
+    end
+    
+    def close type
+        if not (type == :bold and self.open? :title)
+            @builder.close type
+        end
     end
 end
 
