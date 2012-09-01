@@ -290,7 +290,6 @@ end
 
 # Start main
 require 'optparse'
-require 'ostruct'
 
 wrapper = ManHtmlBodyWrapper.new
 
