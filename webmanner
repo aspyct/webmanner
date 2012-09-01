@@ -278,7 +278,7 @@ class ManHtmlBodyWrapper
     end
     
     def indent
-        @indent << "    "
+        @indent << " " * 4
     end
     
     def dedent
