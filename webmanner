@@ -131,6 +131,10 @@ class ManHtmlBuilder
     end
     
     def << text
+        if self.open? :title
+            text.strip!
+        end
+        
         @builder << text
     end
     
