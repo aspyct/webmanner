@@ -62,7 +62,7 @@ class ManPage
                     style = :italic
                 when ?o
                     # Bullet
-                    c = ?o
+                    c = ?-
                 else
                     $stderr.puts "Unexpected char after \\b: #{nc}"
                 end
