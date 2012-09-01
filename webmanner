@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# Usage example
+# man 2 read | ./webmanner > read.2.html
+
 # Copyright (c) 2012 Antoine d'Otreppe <a.dotreppe@aspyct.org>
 # (short -> that's the MIT license)
 #
