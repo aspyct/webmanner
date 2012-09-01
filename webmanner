@@ -206,22 +206,100 @@ class HtmlBuilder
     }
 end
 
+class ManHtmlBodyWrapper
+    attr_accessor :body, :default_style
+    
+    def initialize
+        @title = "Man page"
+        @indent = ""
+        @css = []
+        @js = []
+        @output = nil
+        @default_style = "html { white-space: pre; font-family: monospace; }"
+    end
+    
+    def add_css path
+        @css << path
+    end
+    
+    def add_js path
+        @js << path
+    end
+    
+    def print_to output
+        @output = output
+        # Don't like this...
+        puts "<!DOCTYPE html>"
+        self.tag :html do
+            self.tag :head do
+                self.one_liner :title, @title
+                self.one_liner :style, @default_style
+                self.put_css_tags
+                self.put_js_tags
+            end
+            self.one_liner :body, @body
+        end
+    end
+    
+    def tag tag, &block
+        open_tag tag
+        block.call
+        close_tag tag
+    end
+    
+    def open_tag tag
+        puts "<#{tag}>"
+        indent
+    end
+    
+    def close_tag tag
+        dedent
+        puts "</#{tag}>"
+    end
+    
+    def one_liner tag, contents
+        puts "<#{tag}>#{contents}</#{tag}>"
+    end
+    
+    def puts line
+        @output.puts "#{@indent}#{line}"
+    end
+    
+    def put_css_tags
+        for stylesheet in @css
+            puts "<link rel='stylesheet' href='#{stylesheet}'/>"
+        end
+    end
+    
+    def put_js_tags
+        for javascript in @js
+            puts "<script src='#{javascript}'></script>"
+        end
+    end
+    
+    def indent
+        @indent << "    "
+    end
+    
+    def dedent
+        @indent = @indent.slice!(0, 4)
+    end
+end
+
 
 # Start main
 require 'optparse'
 require 'ostruct'
 
-options = OpenStruct.new
-options.css = []
-options.js = []
+wrapper = ManHtmlBodyWrapper.new
 
 optparser = OptionParser.new do |opts|
     opts.on("-j", "--js [PATH]", "Add a <script> tag with given PATH as source") do |path|
-        options.js << path
+        wrapper.add_js path
     end
     
     opts.on("-s", "--css [PATH]", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
-        options.css << path 
+        wrapper.add_css path 
     end
 end
 
@@ -230,25 +308,5 @@ optparser.parse!
 page = ManPage.new
 page.parse_file $stdin
 
-# Here comes the ugly code I'm responsible for...
-# TODO Definitely clean that up!
-puts "<!DOCTYPE html>
-<html>
-    <head>
-        <style>
-            html {
-                white-space: pre;
-                font-family: monospace
-            }
-        </style>"
-for js in options.js
-    puts "        <script src='#{js}'></script>"
-end
-
-for css in options.css
-    puts "        <link rel='stylesheet' href='#{css}'/>"
-end
-
-puts "    </head>
-    <body>#{page.html}</body>
-</html>"
+wrapper.body = page.html
+wrapper.print_to $stdout
