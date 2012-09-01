@@ -133,19 +133,17 @@ class HtmlBuilder
 
     def << text
         # Escape chars
-        for c in text.bytes
+        for c in text.chars
             case c
-            when ?<
-                psh = "&lt;"
-            when ?>
-                psh = "&gt;"
-            when ?&
-                psh = "&amp;"
-            else
-                psh = c.chr
+            when "<"
+                c = "&lt;"
+            when ">"
+                c = "&gt;"
+            when "&"
+                c = "&amp;"
             end
             
-            @html << psh
+            @html << c
         end
     end
 
