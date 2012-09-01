@@ -1,0 +1,148 @@
+#!/usr/bin/env ruby
+
+class ManPage
+    attr_accessor :title
+
+    def initialize
+        @builder = HtmlBuilder.new
+        @open_style = :none # :bold, :italic
+        @open_block = :none # :title, :paragraph
+        @buffer = ""
+    end
+
+    def html
+        @builder.html
+    end
+
+    def parse_file open_file
+        prevc = nil
+
+        while c = open_file.getc
+            nc = open_file.getc
+
+            if nc == ?\b # Trying to boldify, underline et al
+                # We're interested in the next char
+                nc = open_file.getc
+
+                if c == ?_
+                    # Underline, swap with underlined char
+                    c, nc = nc, c
+                end
+
+                case nc
+                when c # That's bold !
+                    self.open :title if prevc == ?\n # More, it's a title
+                    style = :bold
+                when ?_
+                    style = :italic
+                else
+                    $stderr.puts "Unexpected char after \\b: #{nc}"
+                end
+            else
+                open_file.ungetc nc if nc != nil
+                style = :none
+            end
+
+            self.push_char c, style
+            prevc = c
+        end
+
+        self.commit_buffer
+    end
+
+    def push_char char, style
+        if char != ?\  and style != @open_style
+            self.close @open_style
+            self.open style unless style == :none
+            @open_style = style
+        end
+
+        @buffer << char
+
+        if char == ?\n
+            self.close :title
+        end
+    end
+
+    def open type
+        self.commit_buffer
+        @builder.open type
+    end
+
+    def close type
+        if @builder.open? type
+            self.commit_buffer
+            @builder.close type
+        end
+    end
+
+    def close_all *types
+        for type in types
+            self.close type
+        end
+    end
+
+    def commit_buffer
+        @builder << @buffer
+        @buffer = ""
+    end
+end
+
+class HtmlBuilder
+    require 'set'
+
+    def initialize
+        @html = ""
+        @open = Set.new
+    end
+
+    def html
+        @html
+    end
+
+    def open? type
+        return @open.include? type
+    end
+
+    def << text
+        # Escape chars
+        for c in text.bytes
+            case c
+            when ?<
+                c = "&lt;"
+            when ?>
+                c = "&gt;"
+            when ?&
+                c = "&amp;"
+            end
+
+            @html << c
+        end
+    end
+
+    def open type
+        if @open.add? type
+            @html << "<#{@@tags[type]}>"
+        else
+            raise "Tag already open: #{type}"
+        end
+    end
+
+    def close type
+        if @open.delete? type
+            @html << "</#{@@tags[type]}>"
+        else
+            raise "Tag was not open: #{type}"
+        end
+    end
+
+    @@tags = {
+        :title  => "h2",
+        :bold   => "strong",
+        :italic => "em"
+    }
+end
+
+page = ManPage.new
+page.parse_file $stdin
+puts "<html><head><style>html { white-space: pre; font-family: monospace }</style></head><body>#{page.html}</body></html>"
