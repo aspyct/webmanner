@@ -213,7 +213,5 @@ puts "<html>
             }
         </style>
     </head>
-    <body>
-        #{page.html}
-    </body>
+    <body>#{page.html}</body>
 </html>"
