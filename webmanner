@@ -59,6 +59,9 @@ class ManPage
                     style = :bold
                 when ?_
                     style = :italic
+                when ?o
+                    # Bullet
+                    c = ?o
                 else
                     $stderr.puts "Unexpected char after \\b: #{nc}"
                 end
@@ -133,14 +136,16 @@ class HtmlBuilder
         for c in text.bytes
             case c
             when ?<
-                c = "&lt;"
+                psh = "&lt;"
             when ?>
-                c = "&gt;"
+                psh = "&gt;"
             when ?&
-                c = "&amp;"
+                psh = "&amp;"
+            else
+                psh = c.chr
             end
-
-            @html << c
+            
+            @html << psh
         end
     end
 
@@ -169,4 +174,16 @@ end
 
 page = ManPage.new
 page.parse_file $stdin
-puts "<html><head><style>html { white-space: pre; font-family: monospace }</style></head><body>#{page.html}</body></html>"
+puts "<html>
+    <head>
+        <style>
+            html {
+                white-space: pre;
+                font-family: monospace
+            }
+        </style>
+    </head>
+    <body>
+        #{page.html}
+    </body>
+</html>"
