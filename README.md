@@ -8,6 +8,8 @@ How to use?
 
 Simply pipe the manpage to webmanner and redirect the output to the desired file.
 
+**Turns out that this does not work under linux.**
+
 ```bash
 man 2 read | webmanner > read.2.html
 ```
