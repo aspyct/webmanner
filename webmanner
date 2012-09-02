@@ -60,11 +60,11 @@ class ManPage
                     style = :bold
                 when ?_
                     style = :italic
-                when ?o
-                    # Bullet
+                when ?o, ?-
+                    # should be a bullet
                     c = ?-
                 else
-                    $stderr.puts "Unexpected char after \\b: #{nc}"
+                    $stderr.puts "Unexpected char after #{c}\\b: #{nc}"
                 end
                 
                 nc = open_file.getc
