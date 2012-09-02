@@ -24,7 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-module AbstractManPage
+module ManParserBase
     attr_accessor :title
 
     def initialize
@@ -38,7 +38,7 @@ module AbstractManPage
         @builder.html
     end
 
-    def parse_file file
+    def parse_file open_file
         raise "This method must be implemented in subclasses"
     end
 
@@ -81,7 +81,7 @@ module AbstractManPage
 end
 
 class OsxManPage
-    include AbstractManPage
+    include ManParserBase
     
     def parse_file open_file
         prevc = nil
