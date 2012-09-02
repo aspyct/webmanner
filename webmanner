@@ -319,6 +319,9 @@ wrapper = ManHtmlBodyWrapper.new
 force_linux = false
 
 optparser = OptionParser.new do |opts|
+    prog = File.basename $0
+    opts.banner = "Usage: #{prog} [[<section>] <title>]"
+    
     opts.on("-j", "--js [PATH]", "Add a <script> tag with given PATH as source") do |path|
         wrapper.add_js path
     end
