@@ -24,7 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class ManPage
+module AbstractManPage
     attr_accessor :title
 
     def initialize
@@ -38,6 +38,51 @@ class ManPage
         @builder.html
     end
 
+    def parse_file file
+        raise "This method must be implemented in subclasses"
+    end
+
+    def push_char char, style
+        if char != ?\  and style != @open_style
+            self.close @open_style
+            self.open style unless style == :none
+            @open_style = style
+        end
+
+        @buffer << char
+
+        if char == ?\n
+            self.close :title
+        end
+    end
+
+    def open type
+        self.commit_buffer
+        @builder.open type
+    end
+
+    def close type
+        if @builder.open? type
+            self.commit_buffer
+            @builder.close type
+        end
+    end
+
+    def close_all *types
+        for type in types
+            self.close type
+        end
+    end
+
+    def commit_buffer
+        @builder << @buffer
+        @buffer = ""
+    end
+end
+
+class OsxManPage
+    include AbstractManPage
+    
     def parse_file open_file
         prevc = nil
 
@@ -77,43 +122,6 @@ class ManPage
         end
 
         self.commit_buffer
-    end
-
-    def push_char char, style
-        if char != ?\  and style != @open_style
-            self.close @open_style
-            self.open style unless style == :none
-            @open_style = style
-        end
-
-        @buffer << char
-
-        if char == ?\n
-            self.close :title
-        end
-    end
-
-    def open type
-        self.commit_buffer
-        @builder.open type
-    end
-
-    def close type
-        if @builder.open? type
-            self.commit_buffer
-            @builder.close type
-        end
-    end
-
-    def close_all *types
-        for type in types
-            self.close type
-        end
-    end
-
-    def commit_buffer
-        @builder << @buffer
-        @buffer = ""
     end
 end
 
@@ -314,6 +322,7 @@ end
 
 optparser.parse!
 
+# Because webmanner is not alright yet under linux...
 if `uname`.chomp.downcase == "linux"
     $stderr.puts "I do not work properly yet under linux"
     if force_linux
@@ -324,7 +333,7 @@ if `uname`.chomp.downcase == "linux"
     end
 end
 
-page = ManPage.new
+page = OsxManPage.new
 page.parse_file $stdin
 
 wrapper.body = page.html
