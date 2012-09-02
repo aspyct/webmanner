@@ -1,14 +1,14 @@
 What is it?
 -----------
 
-Yet another manpage to html converter.
+Yet another manpage to html converter, built and tested on OSX.
+
+**Turns out that webmanner doesn't work with linux man... I'll fix that as soon as possible!**
 
 How to use?
 -----------
 
 Simply pipe the manpage to webmanner and redirect the output to the desired file.
-
-**Turns out that this does not work under linux.**
 
 ```bash
 man 2 read | webmanner > read.2.html
