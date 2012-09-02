@@ -49,7 +49,7 @@ module ManParserBase
     def exec_and_parse command
         require 'open3'
         
-        Open3.popen3 command do |stdin, stdout, stderr|
+        Open3.popen2 command do |stdin, stdout|
             parse_file stdout
         end
     end
