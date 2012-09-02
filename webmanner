@@ -41,6 +41,18 @@ module ManParserBase
     def parse_file open_file
         raise "This method must be implemented in subclasses"
     end
+    
+    def exec section, title
+        raise "This method must be implemented in subclasses"
+    end
+    
+    def exec_and_parse command
+        require 'open3'
+        
+        Open3.popen3 command do |stdin, stdout, stderr|
+            parse_file stdout
+        end
+    end
 
     def push_char char, style
         if char != ?\  and style != @open_style
@@ -122,6 +134,10 @@ class OsxManPage
         end
 
         self.commit_buffer
+    end
+    
+    def exec section, title
+        exec_and_parse "man #{section} #{title}"
     end
 end
 
@@ -334,7 +350,18 @@ if `uname`.chomp.downcase == "linux"
 end
 
 page = OsxManPage.new
-page.parse_file $stdin
+
+if ARGV.count == 0
+    # No argument, read from stdin
+    page.parse_file $stdin
+elsif ARGV.count <= 2
+    # Arguments given, probably section and title
+    title = ARGV.pop
+    section = ARGV.pop
+    page.exec section, title
+else
+    $stderr.puts "Too many arguments"
+end
 
 wrapper.body = page.html
 wrapper.print_to $stdout
