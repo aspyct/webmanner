@@ -328,7 +328,7 @@ optparser = OptionParser.new do |opts|
         wrapper.add_js path
     end
     
-    opts.on("-s", "--css PATH", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
+    opts.on("-s", "--style PATH", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
         wrapper.add_css path 
     end
     
