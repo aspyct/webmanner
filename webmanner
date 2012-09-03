@@ -307,7 +307,7 @@ class ManHtmlBodyWrapper
     end
     
     def dedent
-        @indent = @indent.slice!(0, @tab_spaces)
+        @indent.slice!(0, @tab_spaces)
     end
 end
 
