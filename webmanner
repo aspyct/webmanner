@@ -322,15 +322,15 @@ optparser = OptionParser.new do |opts|
     prog = File.basename $0
     opts.banner = "Usage: #{prog} [[<section>] <title>]"
     
-    opts.on("-j", "--js [PATH]", "Add a <script> tag with given PATH as source") do |path|
+    opts.on("-j", "--js PATH", "Add a <script> tag with given PATH as source") do |path|
         wrapper.add_js path
     end
     
-    opts.on("-s", "--css [PATH]", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
+    opts.on("-s", "--css PATH", "Add a <link rel='stylesheet'> tag with given PATH as href") do |path|
         wrapper.add_css path 
     end
     
-    opts.on("-t", "--tab-spaces [NUM]", "Set the number of whitespaces for html indentation") do |num|
+    opts.on("-t", "--tab-width NUM", "Set the number of whitespaces for html indentation") do |num|
         wrapper.tab_spaces = num.to_i
     end
     
@@ -354,17 +354,14 @@ end
 
 page = OsxManPage.new
 
-if ARGV.count == 0
-    # No argument, read from stdin
-    page.parse_file $stdin
-elsif ARGV.count <= 2
+if ARGV.count > 0 and ARGV.count <= 2
     # Arguments given, probably section and title
     title = ARGV.pop
     section = ARGV.pop
     page.exec section, title
+    wrapper.body = page.html
+    wrapper.print_to $stdout
 else
-    $stderr.puts "Too many arguments"
+    puts optparser.help
 end
 
-wrapper.body = page.html
-wrapper.print_to $stdout
