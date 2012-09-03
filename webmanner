@@ -321,6 +321,8 @@ force_linux = false
 optparser = OptionParser.new do |opts|
     prog = File.basename $0
     opts.banner = "Usage: #{prog} [[<section>] <title>]"
+    opts.summary_indent = "  "
+    opts.summary_width = 20
     
     opts.on("-j", "--js PATH", "Add a <script> tag with given PATH as source") do |path|
         wrapper.add_js path
