@@ -231,7 +231,7 @@ class HtmlBuilder
 end
 
 class ManHtmlBodyWrapper
-    attr_accessor :body, :default_style, :tab_spaces, :unstyled, :title_pattern, :title
+    attr_accessor :body, :default_style, :tab_spaces, :unstyled, :title_pattern, :title, :header
     
     def initialize
         @indent = ""
@@ -239,7 +239,7 @@ class ManHtmlBodyWrapper
         @js = []
         @output = nil
         @tab_spaces = 4
-        @default_style = "html { white-space: pre; font-family: monospace; }"
+        @default_style = "div#manpage { white-space: pre; font-family: monospace; }"
     end
     
     def add_css path
@@ -262,7 +262,10 @@ class ManHtmlBodyWrapper
                 self.put_css_tags
                 self.put_js_tags
             end
-            self.one_liner :body, @body
+            self.tag :body do
+                self.one_liner :header, @header if @header
+                self.one_liner :div, @body.strip, "manpage"
+            end
         end
     end
     
@@ -290,16 +293,28 @@ class ManHtmlBodyWrapper
         puts "</#{tag}>"
     end
     
-    def one_liner tag, contents
-        puts "<#{tag}>#{contents}</#{tag}>"
+    def one_liner tag, contents, id=nil
+        print "<#{tag}", true
+        print " id=\"#{id}\"" if id
+        puts ">#{contents}</#{tag}>", false
+    end
+    
+    def like_this content
+        puts content
     end
     
     def comment text
         puts "<!-- #{text} -->"
     end
     
-    def puts line
-        @output.puts "#{@indent}#{line}"
+    def print text, indent=false
+        @output.print @indent if indent
+        @output.print text
+    end
+    
+    def puts line, indent=true
+        @output.print @indent if indent
+        @output.puts line
     end
     
     def put_css_tags
@@ -358,6 +373,10 @@ optparser = OptionParser.new do |opts|
     
     opts.on("-p", "--title-pattern PATTERN", "Page title pattern (ex: '%{page} | my online man)") do |pattern|
         wrapper.title_pattern = pattern
+    end
+    
+    opts.on("-h", "--header HTML", "HTML to be put into header") do |header|
+        wrapper.header = header
     end
 end
 
