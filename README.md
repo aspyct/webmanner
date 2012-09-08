@@ -8,10 +8,27 @@ Yet another manpage to html converter, built and tested on OSX.
 How to use?
 -----------
 
-Simply pipe the manpage to webmanner and redirect the output to the desired file.
+Call it just like you would call the man, and redirect `stdout` to a file.
 
 ```bash
-man 2 read | webmanner > read.2.html
+webmanner 2 read > read.2.html
+
+# Or omit the section
+webmanner read > read.1.html
+```
+
+**Options**
+
+```
+Usage: webmanner [[<section>] <title>]
+  -j, --js PATH        Add a <script> tag with given PATH as source
+  -s, --style PATH     Add a <link rel='stylesheet'> tag with given PATH as href
+  -t, --tab-width NUM  Set the number of whitespaces for html indentation
+  -l, --linux          Force webmanner to operate under linux
+  -u, --unstyled       Remove default css styling
+  -p PATTERN,          Page title pattern (ex: '%{page} | my online man)'
+      --title-pattern
+  -h, --header HTML    HTML to be put into header
 ```
 
 Where to get the latest version?
