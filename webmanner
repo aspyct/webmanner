@@ -371,7 +371,7 @@ optparser = OptionParser.new do |opts|
         wrapper.unstyled = true
     end
     
-    opts.on("-p", "--title-pattern PATTERN", "Page title pattern (ex: '%{page} | my online man)") do |pattern|
+    opts.on("-p", "--title-pattern PATTERN", "Page title pattern (ex: '%{page} | my online man')") do |pattern|
         wrapper.title_pattern = pattern
     end
     
