@@ -343,7 +343,6 @@ end
 require 'optparse'
 
 wrapper = ManHtmlBodyWrapper.new
-force_linux = false
 
 optparser = OptionParser.new do |opts|
     prog = File.basename $0
@@ -363,8 +362,8 @@ optparser = OptionParser.new do |opts|
         wrapper.tab_spaces = num.to_i
     end
     
-    opts.on("-l", "--linux", "Force webmanner to operate under linux") do
-        force_linux = true
+    opts.on("-l", "--linux", "Inactive option") do
+        
     end
     
     opts.on("-u", "--unstyled", "Remove default css styling") do
@@ -381,17 +380,6 @@ optparser = OptionParser.new do |opts|
 end
 
 optparser.parse!
-
-# Because webmanner is not alright yet under linux...
-if `uname`.chomp.downcase == "linux"
-    $stderr.puts "I do not work properly yet under linux"
-    if force_linux
-        $stderr.puts "Forced by --linux flag"
-    else
-        $stderr.puts "Add --linux flag to force run"
-        exit
-    end
-end
 
 page = OsxManPage.new
 

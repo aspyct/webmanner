@@ -3,7 +3,7 @@ What is it?
 
 Yet another manpage to html converter, built and tested on OSX.
 
-**Turns out that webmanner doesn't work with linux man... I'll fix that as soon as possible!**
+**Although webmanner works under Linux, it does not recognize formatting yet. I'll fix that as soon as possible.**
 
 How to use?
 -----------
